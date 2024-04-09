@@ -30,6 +30,9 @@ public:
         this->subscription_ = this->create_subscription<sensor_msgs::msg::CompressedImage>(
             "/image_raw/compressed", 10,
             std::bind(&ImageProcessor::imageCallback, this, std::placeholders::_1));
+
+        this->declare_parameter<uint8_t>("id", 0);
+        this->get_parameter("id", id);
         socket_fd = socket(AF_INET, SOCK_DGRAM, 0);
         if (socket_fd == -1) {
             RCLCPP_ERROR(this->get_logger(), "Could not create socket");
@@ -105,7 +108,7 @@ private:
 
           //RCLCPP_INFO(this->get_logger(), "Position: (%d, %d), Orientation: %f", position.x, position.y, orientation);
           CarTrackingMessage message;
-          message.id = 1;
+          message.id = id;
           message.position_x = position.x;
           message.position_y = position.y;
           message.orientation = orientation;
@@ -138,6 +141,7 @@ private:
     rclcpp::Subscription<sensor_msgs::msg::CompressedImage>::SharedPtr subscription_;
     int socket_fd;
     struct sockaddr_in multicast_addr;
+    uint8_t id;
 };
 
 int main(int argc, char * argv[]) {

@@ -8,7 +8,10 @@ def generate_launch_description():
             executable='car_tracker',
             name='car_tracker',
             remappings=[
-                ('/image_raw/compressed', '/overhead_cam1/image_raw/compressed'),
-            ]
+                ('/image_raw/compressed', '/overhead_cam2/image_raw/compressed'),
+            ],
+            parameters=[
+                {'id': 2}, 
+            ],
         )
     ])
