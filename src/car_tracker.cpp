@@ -63,7 +63,7 @@ private:
         // Convert to HSV and filter for white points
         cv::Mat hsv, mask;
         cv::cvtColor(image_undistorted, hsv, cv::COLOR_BGR2HSV);
-        cv::inRange(hsv, cv::Scalar(80, 0, 200), cv::Scalar(150, 100, 255), mask);
+        cv::inRange(hsv, cv::Scalar(80, 0, 210), cv::Scalar(150, 100, 255), mask);
 
         // Find contours and white points
         std::vector<std::vector<cv::Point>> contours;
@@ -106,6 +106,9 @@ private:
           double orientation = clip_angle(atan2(front_point.y - rear_point.y, front_point.x - rear_point.x));
           cv::Point position = rear_point;
 
+          //std::vector<cv::Point> points = {front_points[0], front_points[1], rear_point};
+          //cv::polylines(image_undistorted, points, true, cv::Scalar(0, 255, 0), 2);
+
           //RCLCPP_INFO(this->get_logger(), "Position: (%d, %d), Orientation: %f", position.x, position.y, orientation);
           CarTrackingMessage message;
           message.id = id;
@@ -116,6 +119,10 @@ private:
               RCLCPP_ERROR(this->get_logger(), "Could not send message");
           }
         }
+
+        //cv::imshow("Image", image_undistorted);
+        //cv::imshow("Mask", mask);
+        //cv::waitKey(1);
     }
 
     // Helper function to calculate distance between two points
