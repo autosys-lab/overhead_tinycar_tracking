@@ -86,10 +86,10 @@ private:
 
         cv::Point front_points[2];
         cv::Point rear_point;
-        const double MAX_PERP_DISTANCE = 30.0;
+        const double MAX_PERP_DISTANCE = 34.0;
         for (auto &p1 : white_points) {
             for (auto &p2 : white_points) {
-                if (p1 != p2 && distance(p1, p2) < 10) {
+                if (p1 != p2 && distance(p1, p2) < 12) {
                     for (auto &p3 : white_points) {
                         if (p3 != p1 && p3 != p2) {
                             if (perp_distance(p3, p1, p2) < MAX_PERP_DISTANCE && distance(p1, p3) < MAX_PERP_DISTANCE and distance(p2, p3) < MAX_PERP_DISTANCE) {
