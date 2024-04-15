@@ -32,7 +32,7 @@ public:
             "/image_raw/compressed", 10,
             std::bind(&ImageProcessor::imageCallback, this, std::placeholders::_1));
 
-        this->publisher_ = this->create_publisher<sensor_msgs::msg::CompressedImage>("debug_image", 10);
+        this->publisher_ = this->create_publisher<sensor_msgs::msg::CompressedImage>("debug/image_raw/compressed", 10);
         this->declare_parameter<uint8_t>("id", 0);
         this->get_parameter("id", id);
         socket_fd = socket(AF_INET, SOCK_DGRAM, 0);
