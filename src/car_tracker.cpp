@@ -5,6 +5,7 @@
 #include <opencv2/calib3d.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <sensor_msgs/msg/compressed_image.hpp>
+#include <image_transport/image_transport.hpp>
 
 #include <vector>
 #include <cmath>
@@ -31,6 +32,8 @@ public:
             "/image_raw/compressed", 10,
             std::bind(&ImageProcessor::imageCallback, this, std::placeholders::_1));
 
+        image_transport::ImageTransport it(this);
+        this->pub_ = it.advertise("debug_image", 1);
         this->declare_parameter<uint8_t>("id", 0);
         this->get_parameter("id", id);
         socket_fd = socket(AF_INET, SOCK_DGRAM, 0);
@@ -106,8 +109,8 @@ private:
           double orientation = clip_angle(atan2(front_point.y - rear_point.y, front_point.x - rear_point.x));
           cv::Point position = rear_point;
 
-          //std::vector<cv::Point> points = {front_points[0], front_points[1], rear_point};
-          //cv::polylines(image_undistorted, points, true, cv::Scalar(0, 255, 0), 2);
+          std::vector<cv::Point> points = {front_points[0], front_points[1], rear_point};
+          cv::polylines(image_undistorted, points, true, cv::Scalar(0, 255, 0), 2);
 
           //RCLCPP_INFO(this->get_logger(), "Position: (%d, %d), Orientation: %f", position.x, position.y, orientation);
           CarTrackingMessage message;
@@ -119,6 +122,8 @@ private:
               RCLCPP_ERROR(this->get_logger(), "Could not send message");
           }
         }
+        auto message = cv_bridge::CvImage(std_msgs::msg::Header(), "bgr8", image_undistorted).toCompressedImageMsg();
+        pub_.publish(*message);
 
         //cv::imshow("Image", image_undistorted);
         //cv::imshow("Mask", mask);
@@ -146,6 +151,7 @@ private:
     }
 
     rclcpp::Subscription<sensor_msgs::msg::CompressedImage>::SharedPtr subscription_;
+    image_transport::Publisher pub_;
     int socket_fd;
     struct sockaddr_in multicast_addr;
     uint8_t id;
