@@ -9,7 +9,7 @@ def generate_launch_description():
             name='car_tracker',
             remappings=[
                 ('/image_raw/compressed', '/overhead_cam1/image_raw/compressed'),
-                ('/debug_image', '/overhead_cam1/debug_image'),
+                ('/debug_image', '/overhead_cam1/debug_image/compressed'),
             ],
             parameters=[
                 {'id': 1}, 
