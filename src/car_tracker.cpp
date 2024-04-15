@@ -32,7 +32,7 @@ public:
             "/image_raw/compressed", 10,
             std::bind(&ImageProcessor::imageCallback, this, std::placeholders::_1));
 
-        this->pub_ = this->create_publisher<sensor_msgs::msg::CompressedImage>("debug_image", 10);
+        this->publisher_ = this->create_publisher<sensor_msgs::msg::CompressedImage>("debug_image", 10);
         this->declare_parameter<uint8_t>("id", 0);
         this->get_parameter("id", id);
         socket_fd = socket(AF_INET, SOCK_DGRAM, 0);
@@ -122,7 +122,7 @@ private:
           }
         }
         auto message = cv_bridge::CvImage(std_msgs::msg::Header(), "bgr8", image_undistorted).toCompressedImageMsg();
-        pub_.publish(*message.get());
+        publisher_.publish(*message.get());
 
         //cv::imshow("Image", image_undistorted);
         //cv::imshow("Mask", mask);
