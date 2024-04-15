@@ -13,6 +13,7 @@ def generate_launch_description():
             ],
             parameters=[
                 {'id': 2}, 
+                {'min_hsv_value': 205},
             ],
         )
     ])

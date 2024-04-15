@@ -34,7 +34,9 @@ public:
 
         this->publisher_ = this->create_publisher<sensor_msgs::msg::CompressedImage>("debug/image_raw/compressed", 10);
         this->declare_parameter<uint8_t>("id", 0);
+        this->declare_parameter<int>("min_hsv_value", 210);
         this->get_parameter("id", id);
+        this->get_parameter("min_hsv_value", min_hsv_value);
         socket_fd = socket(AF_INET, SOCK_DGRAM, 0);
         if (socket_fd == -1) {
             RCLCPP_ERROR(this->get_logger(), "Could not create socket");
@@ -65,7 +67,7 @@ private:
         // Convert to HSV and filter for white points
         cv::Mat hsv, mask;
         cv::cvtColor(image_undistorted, hsv, cv::COLOR_BGR2HSV);
-        cv::inRange(hsv, cv::Scalar(80, 0, 210), cv::Scalar(150, 100, 255), mask);
+        cv::inRange(hsv, cv::Scalar(80, 0, min_hsv_value), cv::Scalar(150, 100, 255), mask);
 
         // Find contours and white points
         std::vector<std::vector<cv::Point>> contours;
@@ -124,9 +126,9 @@ private:
         auto message = cv_bridge::CvImage(std_msgs::msg::Header(), "bgr8", image_undistorted).toCompressedImageMsg();
         publisher_->publish(*message.get());
 
-        //cv::imshow("Image", image_undistorted);
-        //cv::imshow("Mask", mask);
-        //cv::waitKey(1);
+        cv::imshow("Image", image_undistorted);
+        cv::imshow("Mask", mask);
+        cv::waitKey(1);
     }
 
     // Helper function to calculate distance between two points
@@ -154,6 +156,7 @@ private:
     int socket_fd;
     struct sockaddr_in multicast_addr;
     uint8_t id;
+    int min_hsv_value;
 };
 
 int main(int argc, char * argv[]) {
