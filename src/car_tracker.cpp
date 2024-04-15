@@ -32,8 +32,7 @@ public:
             "/image_raw/compressed", 10,
             std::bind(&ImageProcessor::imageCallback, this, std::placeholders::_1));
 
-        image_transport::ImageTransport it(this);
-        this->pub_ = it.advertise("debug_image", 1);
+        this->pub_ = this->create_publisher<sensor_msgs::msg::CompressedImage>("debug_image", 10);
         this->declare_parameter<uint8_t>("id", 0);
         this->get_parameter("id", id);
         socket_fd = socket(AF_INET, SOCK_DGRAM, 0);
@@ -123,7 +122,7 @@ private:
           }
         }
         auto message = cv_bridge::CvImage(std_msgs::msg::Header(), "bgr8", image_undistorted).toCompressedImageMsg();
-        pub_.publish(message);
+        pub_.publish(*message.get());
 
         //cv::imshow("Image", image_undistorted);
         //cv::imshow("Mask", mask);
@@ -151,7 +150,7 @@ private:
     }
 
     rclcpp::Subscription<sensor_msgs::msg::CompressedImage>::SharedPtr subscription_;
-    image_transport::Publisher pub_;
+    rclcpp::Publisher<sensor_msgs::msg::CompressedImage>::SharedPtr publisher_;
     int socket_fd;
     struct sockaddr_in multicast_addr;
     uint8_t id;
