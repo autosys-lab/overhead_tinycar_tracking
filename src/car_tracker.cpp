@@ -123,7 +123,7 @@ private:
           }
         }
         auto message = cv_bridge::CvImage(std_msgs::msg::Header(), "bgr8", image_undistorted).toCompressedImageMsg();
-        pub_.publish(*message);
+        pub_.publish(message);
 
         //cv::imshow("Image", image_undistorted);
         //cv::imshow("Mask", mask);
